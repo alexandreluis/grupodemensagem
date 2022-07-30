@@ -7,13 +7,16 @@ package br.com.alr.grupodemensagem.view;
 
 import br.com.alr.grupodemensagem.services.ClienteServices;
 import br.com.alr.grupodemensagem.services.ServicesFactory;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import br.com.alr.grupodemensagem.model.Cliente;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableModel;
 //import static tlivrariaoojf.TLivrariaOOJF.cadClientes;
 
 /**
@@ -54,7 +57,6 @@ public class jfCliente extends javax.swing.JFrame
         jtfCpfCnpj = new javax.swing.JTextField();
         jtfEndereco = new javax.swing.JTextField();
         jtfTelefone = new javax.swing.JTextField();
-        jbSalvar = new javax.swing.JButton();
         jbLimpar = new javax.swing.JButton();
         jbCancelar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -82,15 +84,6 @@ public class jfCliente extends javax.swing.JFrame
         jLabel5.setText("Telefone:");
 
         jtfNomeCliente.setToolTipText("");
-
-        jbSalvar.setText("Salvar");
-        jbSalvar.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jbSalvarActionPerformed(evt);
-            }
-        });
 
         jbLimpar.setText("Limpar");
         jbLimpar.addActionListener(new java.awt.event.ActionListener()
@@ -132,6 +125,13 @@ public class jfCliente extends javax.swing.JFrame
             }
         });
         jtClientes.setToolTipText("");
+        jtClientes.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                jtClientesMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jtClientes);
         jtClientes.getAccessibleContext().setAccessibleName("");
 
@@ -163,8 +163,6 @@ public class jfCliente extends javax.swing.JFrame
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jbSalvar)
                         .addGap(18, 18, 18)
                         .addComponent(jbLimpar)
                         .addGap(18, 18, 18)
@@ -228,7 +226,6 @@ public class jfCliente extends javax.swing.JFrame
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbCancelar)
                     .addComponent(jbLimpar)
-                    .addComponent(jbSalvar)
                     .addComponent(jButton1))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -251,6 +248,44 @@ public class jfCliente extends javax.swing.JFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void pegaDadosDaTabela()
+    {
+        int totalRows = jtClientes.getRowCount();
+        System.out.println("totalRows " + totalRows);
+        //jtClientes.getValueAt(0, NORMAL)
+        //System.out.println(" " + jtClientes.getSelectedIndex());
+    }
+
+    private void jTable1MousePressed(java.awt.event.MouseEvent evt)
+    {
+
+        int selectedRow = 0;
+
+        ListSelectionModel rowSM = jtClientes.getSelectionModel();
+
+        rowSM.addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+
+                //selectedRow = lsm.getMinSelectionIndex();
+                int numCols = jtClientes.getColumnCount();
+                System.out.println("numCols " + numCols);
+
+                DefaultTableModel model = (DefaultTableModel) jtClientes.getModel();
+
+                System.out.print(" \n row " + selectedRow + ":");
+
+                for (int j = 0; j < numCols; j++)
+                {
+                    System.out.print(" " + model.getValueAt(selectedRow, j));
+                }
+
+            }
+        });
+    }
     private void jbLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbLimparActionPerformed
         // TODO add your handling code here:
         jtfNomeCliente.setText("");
@@ -262,7 +297,7 @@ public class jfCliente extends javax.swing.JFrame
     }//GEN-LAST:event_jbLimparActionPerformed
 
     private void jbCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCancelarActionPerformed
-{
+        {
             try
             {
                 ClienteServices clienteServices = ServicesFactory.getClienteServices();
@@ -273,10 +308,10 @@ public class jfCliente extends javax.swing.JFrame
                 cli.setEndereco(jtfEndereco.getText());
                 cli.setEmail(jtfEmail.getText());
                 cli.setPassword(jtfSenha.getText());
-                
+
                 boolean doc = false;
                 int tPessoa = 0;
-                
+
                 if (!jrbCpf.isSelected() || !jrbCnpj.isSelected())
                 {
                     JOptionPane.showMessageDialog(this, "Selecione CPF ou CNPJ.");
@@ -319,7 +354,7 @@ public class jfCliente extends javax.swing.JFrame
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
-            }            
+            }
         }
 
         //jfCliente.this.dispose();// fecha janela
@@ -334,7 +369,7 @@ public class jfCliente extends javax.swing.JFrame
             DefaultTableModel model = (DefaultTableModel) jtClientes.getModel();
             model.getDataVector().removeAllElements();
             model.fireTableDataChanged();
-            Object rowData[] = new Object[6];
+            Object rowData[] = new Object[8];
 
             for (Cliente listCli : clienteServices.getAll())
             {
@@ -352,109 +387,66 @@ public class jfCliente extends javax.swing.JFrame
         {
             JOptionPane.showInputDialog("Clientes não existem.");
         }
-
     }
 
-    private void jbSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSalvarActionPerformed
-
-        if(jtfNomeCliente.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Nome.");
-        }else if(jtfCpfCnpj.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Documento.");
-        }else if(jtfTelefone.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Telefone.");
-        }else if(jtfEndereco.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Endereço.");
-        }else if(jtfEmail.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Endereço de email.");
-        }else if(jtfSenha.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha a senha.");
-        }else
-        {
-            try
-            {
-                ClienteServices clienteServices = ServicesFactory.getClienteServices();
-
-                Cliente cli = new Cliente();
-                cli.setNomeCliente(jtfNomeCliente.getText());
-                cli.setTelefone(jtfTelefone.getText());
-                cli.setEndereco(jtfEndereco.getText());
-                cli.setEmail(jtfEmail.getText());
-                cli.setPassword(jtfSenha.getText());
-                
-                boolean doc = false;
-                int tPessoa = 0;
-                
-                if (!jrbCpf.isSelected() || !jrbCnpj.isSelected())
-                {
-                    JOptionPane.showMessageDialog(this, "Selecione CPF ou CNPJ.");
-                }
-
-                Cliente cliCpfCnpj;
-                cliCpfCnpj = clienteServices.getByDoc(jtfCpfCnpj.getText());
-
-                if ((jrbCpf.isSelected()) && (cliCpfCnpj.getCpf() == null))
-                {
-                    cli.setCpf(jtfCpfCnpj.getText());
-                    cli.setCnpj(null);
-                    doc = false;
-                } else if ((jrbCnpj.isSelected()) && (cliCpfCnpj.getCnpj() == null))
-                {
-                    cli.setCpf(null);
-                    cli.setCnpj(jtfCpfCnpj.getText());
-                    doc = false;
-                }
-
-                //Integer nCPFCNJ = cliCpfCnpj.getIdCliente(); 
-                if ((cliCpfCnpj == null) == true)
-                {
-                    JOptionPane.showMessageDialog(this, "Este documento já existe!"
-                            + "\nTente novamente!!!");
-                    doc = true;
-                }
-
-                //Cadastro a partir das validações
-                if ((jrbCpf.isSelected() || jrbCnpj.isSelected()) && !doc && !jtfNomeCliente.getText().isEmpty() && !jtfCpfCnpj.getText().isEmpty())
-                {
-                    clienteServices.addCliente(cli);
-                    addRowToTable();
-                    jbLimpar.doClick();
-                    JOptionPane.showMessageDialog(this, cli.getNomeCliente() + " cadastrado com sucesso!");
-                } else
-                {
-                    JOptionPane.showMessageDialog(this, "Cadastro incompleto.");
-                }
-            } catch (SQLException ex)
-            {
-                Logger.getLogger(jfCliente.class.getName()).log(Level.SEVERE, null, ex);
-            }            
-        }
-    }//GEN-LAST:event_jbSalvarActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
+        try
+        {
             ClienteServices clienteServices = ServicesFactory.getClienteServices();
-            
+
             Cliente cliente;
             cliente = clienteServices.getByDoc(jtfCpfCnpj.getText());
-            
+
             Boolean deletou = clienteServices.deleteOneClient(cliente.getIdCliente());
-            
-            if(deletou == true)
+
+            if (deletou == true)
             {
                 JOptionPane.showMessageDialog(this, cliente.getNomeCliente() + " foi excluído do cadastro.");
             }
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(jfCliente.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jtClientesMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_jtClientesMouseClicked
+    {//GEN-HEADEREND:event_jtClientesMouseClicked
+        try
+        {
+            //
+            int column = 0;
+            int row = jtClientes.getSelectedRow();
+            
+            TableModel model = jtClientes.getModel();
+            int idClient = Integer.parseInt(model.getValueAt(row, column).toString());
+            
+            ClienteServices clienteServices = ServicesFactory.getClienteServices();
+            
+            Cliente clienteObjeto;
+            clienteObjeto = clienteServices.getById(idClient);
+            
+            
+            
+            jtfNomeCliente.setText(clienteObjeto.getNomeCliente());
+            
+            if (clienteObjeto.getCnpj().equals(""))
+            {
+                jtfCpfCnpj.setText(clienteObjeto.getCpf());
+            } else
+            {
+                jtfCpfCnpj.setText(clienteObjeto.getCnpj());
+            }
+            
+            jtfTelefone.setText(clienteObjeto.getTelefone());
+            jtfEndereco.setText(clienteObjeto.getEndereco());
+            jtfEmail.setText(clienteObjeto.getEmail());
+            jtfSenha.setText(clienteObjeto.getPassword());
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_jtClientesMouseClicked
 
     /**
      * @param args the command line arguments
@@ -515,7 +507,6 @@ public class jfCliente extends javax.swing.JFrame
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton jbCancelar;
     private javax.swing.JButton jbLimpar;
-    private javax.swing.JButton jbSalvar;
     private javax.swing.JRadioButton jrbCnpj;
     private javax.swing.JRadioButton jrbCpf;
     private javax.swing.JTable jtClientes;

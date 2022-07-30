@@ -1,23 +1,34 @@
 package br.com.alr.grupodemensagem.tlivrariaoojf;
 
+import br.com.alr.grupodemensagem.model.Cliente;
+import br.com.alr.grupodemensagem.services.ClienteServices;
+import br.com.alr.grupodemensagem.services.ServicesFactory;
 import br.com.alr.grupodemensagem.view.ChatClient;
 import br.com.alr.grupodemensagem.view.ChatClientGUI;
 import br.com.alr.grupodemensagem.view.ChatServer;
 import br.com.alr.grupodemensagem.view.ChatServerGUI;
 import javax.swing.JFrame;
 import br.com.alr.grupodemensagem.view.jfTelaDadosParaCliente;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
 {
+    private static Cliente client;
+    
 
-    /**
-     * Creates new form jfTelaPrincipal
-     */
     public jfTelaPrincipalDoCliente()
     {
         initComponents();
     }
-
+    
+    public void enviaString(String cliente) throws SQLException
+    {
+        ClienteServices clienteServices = ServicesFactory.getClienteServices();
+        client = clienteServices.getByEmail(cliente);
+        jlCliente.setText(client.getNomeCliente());
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -29,6 +40,8 @@ public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
     {
 
         jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jlCliente = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -38,15 +51,29 @@ public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jLabel1.setText("Cliente: ");
+
+        jlCliente.setText(" ");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 767, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(266, 266, 266)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addComponent(jlCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(144, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 385, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(169, 169, 169)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jlCliente))
+                .addContainerGap(200, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Minhas Informações");
@@ -105,24 +132,28 @@ public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem1ActionPerformed
     {//GEN-HEADEREND:event_jMenuItem1ActionPerformed
-        jfTelaDadosParaCliente dadosDoCliente = new jfTelaDadosParaCliente();
-        dadosDoCliente.setVisible(true);
-        dadosDoCliente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        try
+        {
+            jfTelaDadosParaCliente dadosDoCliente = new jfTelaDadosParaCliente();
+            dadosDoCliente.setVisible(true);
+            dadosDoCliente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            dadosDoCliente.enviaObjeto(client);
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(jfTelaPrincipalDoCliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
     {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
         ChatServer chatServer = new ChatServer();
-        
+
         ChatServerGUI server = new ChatServerGUI();
         server.setVisible(true);
         server.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
-        
-        
-        
         ChatClient chatCliente = new ChatClient();
-        
+
         ChatClientGUI cliente = new ChatClientGUI();
         cliente.setVisible(true);
         cliente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -170,6 +201,7 @@ public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
         //</editor-fold>
         //</editor-fold>
 
+        //Cliente cliente;
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable()
         {
@@ -181,6 +213,7 @@ public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -188,5 +221,6 @@ public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jlCliente;
     // End of variables declaration//GEN-END:variables
 }

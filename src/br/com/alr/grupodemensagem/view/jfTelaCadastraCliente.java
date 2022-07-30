@@ -6,6 +6,11 @@ import br.com.alr.grupodemensagem.services.ServicesFactory;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import br.com.alr.grupodemensagem.model.Cliente;
+import br.com.alr.grupodemensagem.utilities.Tools;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -229,11 +234,12 @@ public class jfTelaCadastraCliente extends javax.swing.JFrame
 
                 Cliente cli = new Cliente();
                 cli.setNomeCliente(jtfNomeCliente.getText());
-                cli.setNomeCliente(jtfCpfCnpj.getText());
-                cli.setNomeCliente(jtfTelefone.getText());
-                cli.setTelefone(jtfEndereco.getText());
-                cli.setEndereco(jtfEmail.getText());
-                cli.setEndereco(jtfSenha.getText());
+                cli.setTelefone(jtfTelefone.getText());
+                cli.setEndereco(jtfEndereco.getText());
+                cli.setEmail(jtfEmail.getText());
+                
+                Tools ferramentas = new Tools();
+                cli.setPassword(ferramentas.geraSenha(jtfSenha.getText()));
                 
                 boolean doc = false;
                 int tPessoa = 0;
@@ -279,12 +285,18 @@ public class jfTelaCadastraCliente extends javax.swing.JFrame
                 {
                     clienteServices.addCliente(cli);
                     jbLimpar.doClick();
-                    JOptionPane.showMessageDialog(this, cli.getNomeCliente() + " cadastrado com sucesso!");
+                    JOptionPane.showMessageDialog(this, "Agora " + cli.getNomeCliente() + " pode utilizar o sistma!");
                 } else
                 {
                     JOptionPane.showMessageDialog(this, "Cadastro incompleto.");
                 }
             } catch (SQLException ex)
+            {
+                ex.printStackTrace();
+            } catch (NoSuchAlgorithmException ex)
+            {
+                ex.printStackTrace();
+            } catch (UnsupportedEncodingException ex)
             {
                 ex.printStackTrace();
             }            

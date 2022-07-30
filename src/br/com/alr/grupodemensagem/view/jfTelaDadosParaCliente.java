@@ -8,12 +8,11 @@ package br.com.alr.grupodemensagem.view;
 import br.com.alr.grupodemensagem.services.ClienteServices;
 import br.com.alr.grupodemensagem.services.ServicesFactory;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 import br.com.alr.grupodemensagem.model.Cliente;
-//import static tlivrariaoojf.TLivrariaOOJF.cadClientes;
+import br.com.alr.grupodemensagem.utilities.Tools;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  *
@@ -22,12 +21,31 @@ import br.com.alr.grupodemensagem.model.Cliente;
 public class jfTelaDadosParaCliente extends javax.swing.JFrame
 {
 
-    /**
-     * Creates new form jfCliente
-     */
+    private static Cliente client;
+
     public jfTelaDadosParaCliente()
     {
         initComponents();
+    }
+
+    public void enviaObjeto(Cliente cliente) throws SQLException
+    {
+        ClienteServices clienteServices = ServicesFactory.getClienteServices();
+        Cliente clienteObjeto = clienteServices.getByEmail(cliente.getEmail());
+        jtfNomeCliente.setText(clienteObjeto.getNomeCliente());
+
+        if (clienteObjeto.getCnpj().equals(""))
+        {
+            jtfCpfCnpj.setText(clienteObjeto.getCpf());
+        } else
+        {
+            jtfCpfCnpj.setText(clienteObjeto.getCnpj());
+        }
+
+        jtfTelefone.setText(clienteObjeto.getTelefone());
+        jtfEndereco.setText(clienteObjeto.getEndereco());
+        jtfEmail.setText(clienteObjeto.getEmail());
+        jtfSenha.setText(clienteObjeto.getPassword());
     }
 
     /**
@@ -52,7 +70,6 @@ public class jfTelaDadosParaCliente extends javax.swing.JFrame
         jtfCpfCnpj = new javax.swing.JTextField();
         jtfEndereco = new javax.swing.JTextField();
         jtfTelefone = new javax.swing.JTextField();
-        jbSalvar = new javax.swing.JButton();
         jbLimpar = new javax.swing.JButton();
         jbCancelar = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -78,15 +95,6 @@ public class jfTelaDadosParaCliente extends javax.swing.JFrame
         jLabel5.setText("Telefone:");
 
         jtfNomeCliente.setToolTipText("");
-
-        jbSalvar.setText("Salvar");
-        jbSalvar.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jbSalvarActionPerformed(evt);
-            }
-        });
 
         jbLimpar.setText("Limpar");
         jbLimpar.addActionListener(new java.awt.event.ActionListener()
@@ -133,9 +141,7 @@ public class jfTelaDadosParaCliente extends javax.swing.JFrame
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jbSalvar)
-                        .addGap(18, 18, 18)
+                        .addGap(27, 27, 27)
                         .addComponent(jbLimpar)
                         .addGap(18, 18, 18)
                         .addComponent(jbCancelar))
@@ -198,7 +204,6 @@ public class jfTelaDadosParaCliente extends javax.swing.JFrame
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jbCancelar)
                     .addComponent(jbLimpar)
-                    .addComponent(jbSalvar)
                     .addComponent(jButton1))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
@@ -220,113 +225,72 @@ public class jfTelaDadosParaCliente extends javax.swing.JFrame
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbLimparActionPerformed
-        // TODO add your handling code here:
+
         jtfNomeCliente.setText("");
         jtfCpfCnpj.setText("");
         jtfTelefone.setText("");
         jtfEndereco.setText("");
         jtfEmail.setText("");
-        jtfSenha.requestFocus();
+        jtfSenha.setText("");
+
     }//GEN-LAST:event_jbLimparActionPerformed
 
     private void jbCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCancelarActionPerformed
-        // TODO add your handling code here:
-        jfTelaDadosParaCliente.this.dispose();
+        try
+        {
+            ClienteServices clienteServices = ServicesFactory.getClienteServices();
+            client = clienteServices.getByEmail(jtfEmail.getText());
+
+            client.setNomeCliente(jtfNomeCliente.getText());
+
+            if (jrbCnpj.isSelected())
+            {
+                client.setCnpj(jtfCpfCnpj.getText());
+            } else
+            {
+                client.setCpf(jtfCpfCnpj.getText());
+            }
+
+            client.setTelefone(jtfTelefone.getText());
+            client.setEndereco(jtfEndereco.getText());
+            client.setEmail(jtfEmail.getText());
+            client.setEmail(jtfEmail.getText());
+
+            Tools ferramentas = new Tools();
+            client.setPassword(ferramentas.geraSenha(jtfSenha.getText()));
+
+            clienteServices.updateFieldsOfClient(client);
+            //jfTelaDadosParaCliente.this.dispose();
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        } catch (NoSuchAlgorithmException ex)
+        {
+            ex.printStackTrace();
+        } catch (UnsupportedEncodingException ex)
+        {
+            ex.printStackTrace();
+        }
     }//GEN-LAST:event_jbCancelarActionPerformed
 
-    private void jbSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbSalvarActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
-        if(jtfNomeCliente.getText().equals(""))
+        ClienteServices clienteServices = ServicesFactory.getClienteServices();
+
+        if (jtfEmail.getText().equals(""))
         {
-            JOptionPane.showMessageDialog(this, "Preencha o Nome.");
-        }else if(jtfCpfCnpj.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Documento.");
-        }else if(jtfTelefone.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Telefone.");
-        }else if(jtfEndereco.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Endereço.");
-        }else if(jtfEmail.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha o Endereço de email.");
-        }else if(jtfSenha.getText().equals(""))
-        {
-            JOptionPane.showMessageDialog(this, "Preencha a senha.");
-        }else
+            JOptionPane.showMessageDialog(this, "Preencha o endereço de email do cliente.");
+        } else
         {
             try
             {
-
-                ClienteServices clienteServices = ServicesFactory.getClienteServices();
-
-                Cliente cli = new Cliente();
-                cli.setEmail(jtfEmail.getText());
-                cli.setPassword(jtfSenha.getText());
-                cli.setNomeCliente(jtfNomeCliente.getText());
-                cli.setCpf(jtfCpfCnpj.getText());
-                cli.setCnpj(jtfCpfCnpj.getText());
-                cli.setEndereco(jtfEndereco.getText());
-                cli.setTelefone(jtfTelefone.getText());
-                
-                boolean doc = false;
-                int tPessoa = 0;
-
-                if (jrbCpf.isSelected() && !jrbCnpj.isSelected())
-                {
-                    tPessoa = 1;
-                } else if (!jrbCpf.isSelected() && jrbCnpj.isSelected())
-                {
-                    tPessoa = 2;
-                } else
-                {
-                    JOptionPane.showMessageDialog(this, "Selecione tipo de cliente.");
-                }
-
-                Cliente cliCpfCnpj;
-                cliCpfCnpj = clienteServices.getByDoc(jtfCpfCnpj.getText());
-
-                if ((jrbCpf.isSelected()) && (cliCpfCnpj.getCpf() == null))
-                {
-                    cli.setCpf(jtfCpfCnpj.getText());
-                    cli.setCnpj(null);
-                    doc = false;
-                } else if ((jrbCnpj.isSelected()) && (cliCpfCnpj.getCnpj() == null))
-                {
-                    cli.setCpf(null);
-                    cli.setCnpj(jtfCpfCnpj.getText());
-                    doc = false;
-                }
-
-                //Integer nCPFCNJ = cliCpfCnpj.getIdCliente(); 
-                if ((cliCpfCnpj == null) == true)
-                {
-                    JOptionPane.showMessageDialog(this, "Este documento já existe!"
-                            + "\nTente novamente!!!");
-                    doc = true;
-                }
-
-                //Cadastro a partir das validações
-                if ((jrbCpf.isSelected() || jrbCnpj.isSelected()) && !doc && !jtfNomeCliente.getText().isEmpty() && !jtfCpfCnpj.getText().isEmpty())
-                {
-                    clienteServices.addCliente(cli);
-                    
-                    jbLimpar.doClick();
-                    JOptionPane.showMessageDialog(this, cli.getNomeCliente() + " cadastrado com sucesso!");
-                } else
-                {
-                    JOptionPane.showMessageDialog(this, "Cadastro incompleto.");
-                }
+                client = clienteServices.getByEmail(jtfEmail.getText());
+                clienteServices.deleteOneClient(client.getIdCliente());
             } catch (SQLException ex)
             {
-                Logger.getLogger(jfTelaDadosParaCliente.class.getName()).log(Level.SEVERE, null, ex);
-            }            
+                ex.printStackTrace();
+            }
         }
-    }//GEN-LAST:event_jbSalvarActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -388,7 +352,6 @@ public class jfTelaDadosParaCliente extends javax.swing.JFrame
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton jbCancelar;
     private javax.swing.JButton jbLimpar;
-    private javax.swing.JButton jbSalvar;
     private javax.swing.JRadioButton jrbCnpj;
     private javax.swing.JRadioButton jrbCpf;
     private javax.swing.JTextField jtfCpfCnpj;

@@ -1,4 +1,3 @@
-
 package br.com.alr.grupodemensagem.view;
 
 import br.com.alr.grupodemensagem.services.ClienteServices;
@@ -6,14 +5,14 @@ import br.com.alr.grupodemensagem.services.ServicesFactory;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import br.com.alr.grupodemensagem.model.Cliente;
-import br.com.alr.grupodemensagem.tlivrariaoojf.jfTelaDoSistema;
 import br.com.alr.grupodemensagem.tlivrariaoojf.jfTelaPrincipalDoAdm;
+import br.com.alr.grupodemensagem.tlivrariaoojf.jfTelaPrincipalDoCliente;
 import br.com.alr.grupodemensagem.utilities.Tools;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,6 +20,7 @@ import br.com.alr.grupodemensagem.utilities.Tools;
  */
 public class jfLogin extends javax.swing.JFrame
 {
+    private static Cliente cliente;
 
     /**
      * Creates new form jfLogin
@@ -160,7 +160,7 @@ public class jfLogin extends javax.swing.JFrame
             try
             {
                 ClienteServices clienteServices = ServicesFactory.getClienteServices();
-                Cliente cliente = clienteServices.getByEmail(jtfUser.getText());
+                cliente = clienteServices.getByEmail(jtfUser.getText());
 
                 if (cliente.getNomeCliente().equals(""))
                 {
@@ -170,10 +170,9 @@ public class jfLogin extends javax.swing.JFrame
                     Tools ferramentas = new Tools();
                     String novaSenhaGerada = ferramentas.geraSenha(senha);
                     cliente.setPassword(novaSenhaGerada);
-                    
+
                     clienteServices.updateFieldsOfClient(cliente);
 
-                    
                 }
             } catch (SQLException ex)
             {
@@ -184,7 +183,7 @@ public class jfLogin extends javax.swing.JFrame
             } catch (UnsupportedEncodingException ex)
             {
                 ex.printStackTrace();
-            }finally
+            } finally
             {
                 JOptionPane.showMessageDialog(this, "Sua senha é: " + senha);
             }
@@ -195,44 +194,68 @@ public class jfLogin extends javax.swing.JFrame
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jbtnLogarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnLogarActionPerformed
+
+        ClienteServices clienteServices = ServicesFactory.getClienteServices();
+        
         Boolean podeEntrar = false;
 
         if (!jtfPassword.getText().equals(""))
         {
             try
             {
+                cliente = clienteServices.getByEmail(jtfUser.getText());
+                
                 Tools toolConfereLogin = new Tools();
                 podeEntrar = toolConfereLogin.confereSenha(jtfUser.getText(), jtfPassword.getText());
             } catch (NoSuchAlgorithmException ex)
             {
-                Logger.getLogger(jfLogin.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             } catch (UnsupportedEncodingException ex)
             {
-                Logger.getLogger(jfLogin.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             } catch (SQLException ex)
             {
-                Logger.getLogger(jfLogin.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
         }
 
         if (podeEntrar == true)
         {
-            if(jtfUser.getText().equals("adm"))
+            if (jtfUser.getText().equals("adm"))
             {
-                //vai para o adm
-                jfTelaPrincipalDoAdm telaPrincipalDoAdm = new jfTelaPrincipalDoAdm();
-                telaPrincipalDoAdm.setVisible(true);
-            }else
+                try {
+                    //vai para o adm
+                    jfTelaPrincipalDoAdm telaPrincipalDoAdm = new jfTelaPrincipalDoAdm();
+                    telaPrincipalDoAdm.setVisible(true);
+                    telaPrincipalDoAdm.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+                    telaPrincipalDoAdm.enviaString(cliente.getEmail());
+                } catch (SQLException ex) {
+                    Logger.getLogger(jfLogin.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else
             {
-                /*TLivrariaOOJF telaPrincipal = new TLivrariaOOJF();*/
-                jfTelaDoSistema telaPrincipal = new jfTelaDoSistema();
-                telaPrincipal.setVisible(true);
-            }           
+                try
+                {
+                    jfTelaPrincipalDoCliente telaPrincipalDoCliente = new jfTelaPrincipalDoCliente();
+                    telaPrincipalDoCliente.setVisible(true);
+                    telaPrincipalDoCliente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+                    telaPrincipalDoCliente.enviaString(cliente.getEmail());
+                } catch (SQLException ex)
+                {
+                    Logger.getLogger(jfLogin.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         } else
         {
             JOptionPane.showMessageDialog(this, "Cliente não está cadastrado.");
         }
+
+        if (!jtfUser.getText().equals(""))
+        {
+
+        }
     }//GEN-LAST:event_jbtnLogarActionPerformed
+
 
     private void jbtnCadastraClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnCadastraClienteActionPerformed
         jfTelaCadastraCliente cadastraCliente = new jfTelaCadastraCliente();
