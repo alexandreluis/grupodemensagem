@@ -9,8 +9,6 @@ import br.com.alr.grupodemensagem.model.Cliente;
 import br.com.alr.grupodemensagem.utilities.Tools;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *

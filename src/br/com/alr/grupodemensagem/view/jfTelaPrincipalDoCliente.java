@@ -1,35 +1,29 @@
-package br.com.alr.grupodemensagem.tlivrariaoojf;
+package br.com.alr.grupodemensagem.view;
 
 import br.com.alr.grupodemensagem.model.Cliente;
 import br.com.alr.grupodemensagem.services.ClienteServices;
 import br.com.alr.grupodemensagem.services.ServicesFactory;
-import br.com.alr.grupodemensagem.view.ChatClientGUI;
-import br.com.alr.grupodemensagem.view.ChatServerGUI;
-import br.com.alr.grupodemensagem.view.jfCliente;
-import br.com.alr.grupodemensagem.view.jfLogin;
 import javax.swing.JFrame;
-import br.com.alr.grupodemensagem.view.jfTelaDadosParaCliente;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class jfTelaPrincipalDoAdm extends javax.swing.JFrame
+public class jfTelaPrincipalDoCliente extends javax.swing.JFrame
 {
+    private static Cliente client;
+    
 
-    private Cliente client;
-
-    public jfTelaPrincipalDoAdm()
+    public jfTelaPrincipalDoCliente()
     {
         initComponents();
     }
-
+    
     public void enviaString(String cliente) throws SQLException
     {
         ClienteServices clienteServices = ServicesFactory.getClienteServices();
         client = clienteServices.getByEmail(cliente);
         jlCliente.setText(client.getNomeCliente());
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -46,14 +40,13 @@ public class jfTelaPrincipalDoAdm extends javax.swing.JFrame
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Cliente");
+        jLabel1.setText("Cliente: ");
 
         jlCliente.setText(" ");
 
@@ -62,20 +55,20 @@ public class jfTelaPrincipalDoAdm extends javax.swing.JFrame
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(154, 154, 154)
+                .addGap(266, 266, 266)
                 .addComponent(jLabel1)
-                .addGap(87, 87, 87)
-                .addComponent(jlCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(105, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jlCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(144, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(148, 148, 148)
+                .addGap(169, 169, 169)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jlCliente))
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addContainerGap(200, Short.MAX_VALUE))
         );
 
         jMenu1.setText("Minhas Informações");
@@ -89,16 +82,6 @@ public class jfTelaPrincipalDoAdm extends javax.swing.JFrame
             }
         });
         jMenu1.add(jMenuItem1);
-
-        jMenuItem4.setText("Controle de Clientes");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                jMenuItem4ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem4);
 
         jMenuBar1.add(jMenu1);
 
@@ -149,34 +132,33 @@ public class jfTelaPrincipalDoAdm extends javax.swing.JFrame
             jfTelaDadosParaCliente dadosDoCliente = new jfTelaDadosParaCliente();
             dadosDoCliente.setVisible(true);
             dadosDoCliente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-
-            ClienteServices clienteServices = ServicesFactory.getClienteServices();
-            client = clienteServices.getByEmail(client.getEmail());
-
             dadosDoCliente.enviaObjeto(client);
         } catch (SQLException ex)
         {
-            Logger.getLogger(jfTelaPrincipalDoAdm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(jfTelaPrincipalDoCliente.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem2ActionPerformed
     {//GEN-HEADEREND:event_jMenuItem2ActionPerformed
+        ChatServer chatServer = new ChatServer();
 
-        chamaChatServer();
+        ChatServerGUI server = new ChatServerGUI();
+        server.setVisible(true);
+        server.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+        ChatClient chatCliente = new ChatClient();
+
+        ChatClientGUI cliente = new ChatClientGUI();
+        cliente.setVisible(true);
+        cliente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem3ActionPerformed
     {//GEN-HEADEREND:event_jMenuItem3ActionPerformed
-        chamaChatCliente();
+        ChatClientGUI cliente = new ChatClientGUI();
+        cliente.setVisible(true);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
-
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jMenuItem4ActionPerformed
-    {//GEN-HEADEREND:event_jMenuItem4ActionPerformed
-        jfCliente controlaClientes = new jfCliente();
-        controlaClientes.setVisible(true);
-        controlaClientes.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -200,28 +182,27 @@ public class jfTelaPrincipalDoAdm extends javax.swing.JFrame
             }
         } catch (ClassNotFoundException ex)
         {
-            java.util.logging.Logger.getLogger(jfTelaPrincipalDoAdm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jfTelaPrincipalDoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex)
         {
-            java.util.logging.Logger.getLogger(jfTelaPrincipalDoAdm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jfTelaPrincipalDoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex)
         {
-            java.util.logging.Logger.getLogger(jfTelaPrincipalDoAdm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jfTelaPrincipalDoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex)
         {
-            java.util.logging.Logger.getLogger(jfTelaPrincipalDoAdm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jfTelaPrincipalDoCliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
 
+        //Cliente cliente;
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable()
         {
             public void run()
             {
-                new jfTelaPrincipalDoAdm().setVisible(true);
+                new jfTelaPrincipalDoCliente().setVisible(true);
             }
         });
     }
@@ -234,22 +215,7 @@ public class jfTelaPrincipalDoAdm extends javax.swing.JFrame
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel jlCliente;
     // End of variables declaration//GEN-END:variables
-
-    private static void chamaChatServer()
-    {
-        ChatServerGUI server = new ChatServerGUI();
-        server.setVisible(true);
-        server.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }
-
-    private void chamaChatCliente()
-    {
-        ChatClientGUI cliente = new ChatClientGUI();
-        cliente.setVisible(true);
-        cliente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-    }
 }

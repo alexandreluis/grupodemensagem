@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import br.com.alr.grupodemensagem.model.Cliente;
-import br.com.alr.grupodemensagem.tlivrariaoojf.jfTelaPrincipalDoAdm;
-import br.com.alr.grupodemensagem.tlivrariaoojf.jfTelaPrincipalDoCliente;
 import br.com.alr.grupodemensagem.utilities.Tools;
 import java.util.logging.Level;
 import java.util.logging.Logger;

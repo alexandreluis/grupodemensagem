@@ -8,8 +8,6 @@ package br.com.alr.grupodemensagem.view;
 import br.com.alr.grupodemensagem.services.ClienteServices;
 import br.com.alr.grupodemensagem.services.ServicesFactory;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import br.com.alr.grupodemensagem.model.Cliente;
@@ -297,64 +295,62 @@ public class jfCliente extends javax.swing.JFrame
     }//GEN-LAST:event_jbLimparActionPerformed
 
     private void jbCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCancelarActionPerformed
+
+        try
         {
-            try
+            ClienteServices clienteServices = ServicesFactory.getClienteServices();
+
+            Cliente cli = new Cliente();
+            cli.setNomeCliente(jtfNomeCliente.getText());
+            cli.setTelefone(jtfTelefone.getText());
+            cli.setEndereco(jtfEndereco.getText());
+            cli.setEmail(jtfEmail.getText());
+            cli.setPassword(jtfSenha.getText());
+
+            boolean doc = false;
+            int tPessoa = 0;
+
+            if (!jrbCpf.isSelected() || !jrbCnpj.isSelected())
             {
-                ClienteServices clienteServices = ServicesFactory.getClienteServices();
-
-                Cliente cli = new Cliente();
-                cli.setNomeCliente(jtfNomeCliente.getText());
-                cli.setTelefone(jtfTelefone.getText());
-                cli.setEndereco(jtfEndereco.getText());
-                cli.setEmail(jtfEmail.getText());
-                cli.setPassword(jtfSenha.getText());
-
-                boolean doc = false;
-                int tPessoa = 0;
-
-                if (!jrbCpf.isSelected() || !jrbCnpj.isSelected())
-                {
-                    JOptionPane.showMessageDialog(this, "Selecione CPF ou CNPJ.");
-                }
-
-                Cliente cliCpfCnpj;
-                cliCpfCnpj = clienteServices.getByDoc(jtfCpfCnpj.getText());
-
-                if ((jrbCpf.isSelected()) && (cliCpfCnpj.getCpf() == null))
-                {
-                    cli.setCpf(jtfCpfCnpj.getText());
-                    cli.setCnpj(null);
-                    doc = false;
-                } else if ((jrbCnpj.isSelected()) && (cliCpfCnpj.getCnpj() == null))
-                {
-                    cli.setCpf(null);
-                    cli.setCnpj(jtfCpfCnpj.getText());
-                    doc = false;
-                }
-
-                //Integer nCPFCNJ = cliCpfCnpj.getIdCliente(); 
-                if ((cliCpfCnpj == null) == true)
-                {
-                    JOptionPane.showMessageDialog(this, "Este documento já existe!"
-                            + "\nTente novamente!!!");
-                    doc = true;
-                }
-
-                //Cadastro a partir das validações
-                if ((jrbCpf.isSelected() || jrbCnpj.isSelected()) && !doc && !jtfNomeCliente.getText().isEmpty() && !jtfCpfCnpj.getText().isEmpty())
-                {
-                    clienteServices.updateFieldsOfClient(cli);
-                    addRowToTable();
-                    jbLimpar.doClick();
-                    JOptionPane.showMessageDialog(this, cli.getNomeCliente() + " cadastrado com sucesso!");
-                } else
-                {
-                    JOptionPane.showMessageDialog(this, "Cadastro incompleto.");
-                }
-            } catch (SQLException ex)
-            {
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Selecione CPF ou CNPJ.");
             }
+
+            Cliente cliCpfCnpj;
+            cliCpfCnpj = clienteServices.getByDoc(jtfCpfCnpj.getText());
+
+            if ((jrbCpf.isSelected()) && (cliCpfCnpj.getCpf() == null))
+            {
+                cli.setCpf(jtfCpfCnpj.getText());
+                cli.setCnpj(null);
+                doc = false;
+            } else if ((jrbCnpj.isSelected()) && (cliCpfCnpj.getCnpj() == null))
+            {
+                cli.setCpf(null);
+                cli.setCnpj(jtfCpfCnpj.getText());
+                doc = false;
+            }
+
+            //Integer nCPFCNJ = cliCpfCnpj.getIdCliente(); 
+            if ((cliCpfCnpj == null) == true)
+            {
+                JOptionPane.showMessageDialog(this, "Este documento já existe!"
+                        + "\nTente novamente!!!");
+                doc = true;
+            }
+
+            if ((jrbCpf.isSelected() || jrbCnpj.isSelected()) && !doc && !jtfNomeCliente.getText().isEmpty() && !jtfCpfCnpj.getText().isEmpty())
+            {
+                clienteServices.updateFieldsOfClient(cli);
+                addRowToTable();
+                jbLimpar.doClick();
+                JOptionPane.showMessageDialog(this, cli.getNomeCliente() + " cadastrado com sucesso!");
+            } else
+            {
+                JOptionPane.showMessageDialog(this, "Cadastro incompleto.");
+            }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
         }
 
         //jfCliente.this.dispose();// fecha janela
@@ -403,7 +399,7 @@ public class jfCliente extends javax.swing.JFrame
             {
                 JOptionPane.showMessageDialog(this, cliente.getNomeCliente() + " foi excluído do cadastro.");
             }
-
+            addRowToTable();
         } catch (SQLException ex)
         {
             ex.printStackTrace();
@@ -417,19 +413,17 @@ public class jfCliente extends javax.swing.JFrame
             //
             int column = 0;
             int row = jtClientes.getSelectedRow();
-            
+
             TableModel model = jtClientes.getModel();
             int idClient = Integer.parseInt(model.getValueAt(row, column).toString());
-            
+
             ClienteServices clienteServices = ServicesFactory.getClienteServices();
-            
+
             Cliente clienteObjeto;
             clienteObjeto = clienteServices.getById(idClient);
-            
-            
-            
+
             jtfNomeCliente.setText(clienteObjeto.getNomeCliente());
-            
+
             if (clienteObjeto.getCnpj().equals(""))
             {
                 jtfCpfCnpj.setText(clienteObjeto.getCpf());
@@ -437,7 +431,7 @@ public class jfCliente extends javax.swing.JFrame
             {
                 jtfCpfCnpj.setText(clienteObjeto.getCnpj());
             }
-            
+
             jtfTelefone.setText(clienteObjeto.getTelefone());
             jtfEndereco.setText(clienteObjeto.getEndereco());
             jtfEmail.setText(clienteObjeto.getEmail());
